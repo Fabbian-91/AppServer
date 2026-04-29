@@ -8,68 +8,101 @@ import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-login',
-  imports: [...MATERIAL_IMPORTS, ReactiveFormsModule, CommonModule],
+
+  // Importaciones necesarias para que el componente standalone funcione
+  imports: [
+    ...MATERIAL_IMPORTS,
+    ReactiveFormsModule,
+    CommonModule
+  ],
+
   templateUrl: './login.html',
   styleUrl: './login.scss',
 })
 export class Login {
+
+  // Inyección del Router para redireccionar después del login
   private router = inject(Router);
-  // Inyectamos FormBuilder para construir el formulario reactivo
+
+  // Inyección de FormBuilder para crear formularios reactivos
   private fb = inject(FormBuilder);
 
-  // Inyectamos el servicio de autenticación
+  // Inyección del servicio de autenticación
   private authService = inject(AuthService);
 
-  // Definimos el formulario de login
+  // Formulario reactivo del login
   loginForm = this.fb.group({
-    // Campo del usuario
-    // Si realmente vas a usar userName, no conviene validar como email
+    // Usuario obligatorio
     userName: ['', [Validators.required]],
 
-    // Campo contraseña
+    // Contraseña obligatoria con mínimo 6 caracteres
     password: ['', [Validators.required, Validators.minLength(6)]],
   });
 
+  // Método que se ejecuta al hacer login
   login(): void {
-    // Verificamos que el formulario sea válido antes de enviarlo
-    if (this.loginForm.valid) {
-      // Convertimos el valor del formulario al modelo LoginModel
-      const datos = this.loginForm.value as LoginModel;
 
-      // Llamamos al servicio de login
-      // Ojo: el servicio debe tener observe: 'response'
-      // para poder leer headers + body
-      this.authService.login(datos).subscribe({
-        next: (response) => {
-          // Leemos el token desde el header llamado "token"
-          const token = response.headers.get('token');
-
-          // Leemos el body de la respuesta
-          const body = response.body;
-
-          console.log('Token recibido desde header:', token);
-          console.log('Body recibido:', body);
-
-          // Si el body existe, guardamos la sesión
-          if (body) {
-            this.authService.saveSession(body, token);
-            //Redirección a la pagina de inicio o dashboard
-            this.router.navigate(['/dashboard'], { replaceUrl: true });//davegar y que el replace para que no pueda volver a la anterior
-          } else {
-            console.error('No se recibió body en la respuesta');
-          }
-        },
-        error: (error) => {
-          console.error('Error completo:', error);
-          console.error('Status:', error.status);
-          console.error('Body del error:', error.error);
-          console.error('Mensaje:', error.error?.message);
-          console.error('Errores:', JSON.stringify(error.error?.errors, null, 2));
-        }
-      });
-    } else {
+    // Validamos que el formulario esté correcto antes de enviarlo
+    if (this.loginForm.invalid) {
       console.warn('Formulario inválido');
+
+      // Marca todos los campos como tocados para mostrar errores en el HTML
       this.loginForm.markAllAsTouched();
+
+      return;
     }
+
+    // Obtenemos los datos del formulario
+    const datos = this.loginForm.getRawValue() as LoginModel;
+
+    // Llamamos al servicio de login
+    this.authService.login(datos).subscribe({
+      next: (response) => {
+
+        // Obtenemos el body de la respuesta
+        const body = response.body;
+
+        // Validamos que exista body antes de guardar la sesión
+        if (!body) {
+          console.error('No se recibió body en la respuesta');
+          return;
+        }
+
+        // Obtenemos el token
+        // Primero intentamos leerlo desde los headers
+        // Si no viene en headers, intentamos leerlo desde el body
+        const token =
+          response.headers.get('token') ||
+          response.headers.get('Authorization') ||
+          response.headers.get('authorization') ||
+          body.token;
+
+        console.log('Token recibido:', token);
+        console.log('Body recibido:', body);
+
+        // Validamos que sí exista token
+        // Si no hay token, el guard no va a dejar entrar al dashboard
+        if (!token) {
+          console.error('No se recibió token');
+          return;
+        }
+
+        // Guardamos la sesión en el servicio
+        this.authService.saveSession(body, token);
+
+        // Redireccionamos al dashboard
+        // replaceUrl evita que el usuario vuelva al login con el botón atrás
+        this.router.navigate(['/dashboard'], { replaceUrl: true });
+      },
+
+      error: (error) => {
+        // Manejo de errores del login
+        console.error('Error completo:', error);
+        console.error('Status:', error.status);
+        console.error('Body del error:', error.error);
+        console.error('Mensaje:', error.error?.message);
+        console.error('Errores:', JSON.stringify(error.error?.errors, null, 2));
+      }
+    });
   }
 }

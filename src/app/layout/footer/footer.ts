@@ -3,8 +3,13 @@ import { MATERIAL_IMPORTS } from '../../shared/material-imports';
 
 @Component({
   selector: 'app-footer',
-  imports: [...MATERIAL_IMPORTS],
+
+  // Importamos Material porque usamos mat-toolbar, mat-icon y botones
+  imports: [
+    ...MATERIAL_IMPORTS
+  ],
+
   templateUrl: './footer.html',
   styleUrl: './footer.scss',
 })
-export class Footer {}
+export class Footer { }

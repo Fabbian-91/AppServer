@@ -1,0 +1,105 @@
+<h2 mat-dialog-title class="dialog-title">
+  <mat-icon>category</mat-icon>
+  <span>Usuario</span>
+</h2>
+
+<mat-dialog-content class="dialog-content">
+  <form class="categoria-form" [formGroup]="form" (ngSubmit)="guardar()">
+
+    <mat-form-field appearance="outline" class="full-width">
+      <mat-label>ID</mat-label>
+      <input matInput readonly formControlName="id" />
+      <mat-icon matSuffix>fingerprint</mat-icon>
+    </mat-form-field>
+
+    <mat-form-field appearance="outline" class="full-width">
+      <mat-label>Email</mat-label>
+      <input
+        matInput
+        placeholder="ejemplo@correo.com"
+        formControlName="userName"
+      />
+      <mat-icon matSuffix>email</mat-icon>
+
+      @if (form.get('userName')?.hasError('required')) {
+        <mat-error>El email es obligatorio</mat-error>
+      }
+
+      @if (form.get('userName')?.hasError('email')) {
+        <mat-error>Ingrese un email válido</mat-error>
+      }
+    </mat-form-field>
+
+    <mat-form-field appearance="outline" class="full-width">
+      <mat-label>
+        {{ data.isModificar ? 'Nueva password opcional' : 'Password' }}
+      </mat-label>
+
+      <input
+        matInput
+        type="password"
+        placeholder="Admin@1234"
+        formControlName="password"
+      />
+
+      <mat-icon matSuffix>password</mat-icon>
+
+      @if (form.get('password')?.hasError('required')) {
+        <mat-error>La contraseña es obligatoria</mat-error>
+      }
+
+      @if (form.get('password')?.hasError('minlength')) {
+        <mat-error>La contraseña debe tener mínimo 6 caracteres</mat-error>
+      }
+    </mat-form-field>
+
+    <mat-form-field appearance="outline" class="full-width">
+      <mat-label>Rol</mat-label>
+
+      <mat-select formControlName="role">
+        @for (item of roles; track $index) {
+          <mat-option [value]="item">
+            {{ item }}
+          </mat-option>
+        }
+      </mat-select>
+
+      @if (form.get('role')?.hasError('required')) {
+        <mat-error>El rol es obligatorio</mat-error>
+      }
+    </mat-form-field>
+
+    <mat-form-field appearance="outline" class="full-width">
+      <mat-label>Estado</mat-label>
+
+      <mat-select formControlName="estado">
+        <mat-option [value]="true">Activo</mat-option>
+        <mat-option [value]="false">Inactivo</mat-option>
+      </mat-select>
+
+      @if (form.get('estado')?.hasError('required')) {
+        <mat-error>El estado es obligatorio</mat-error>
+      }
+    </mat-form-field>
+
+    <mat-dialog-actions align="end" class="dialog-actions">
+      <button mat-stroked-button mat-dialog-close type="button">
+        <mat-icon>close</mat-icon>
+        Cancelar
+      </button>
+
+      @if (!data.usuario || data.isModificar) {
+        <button
+          mat-raised-button
+          color="primary"
+          type="submit"
+          [disabled]="form.invalid"
+        >
+          <mat-icon>{{ data.isModificar ? 'save' : 'add' }}</mat-icon>
+          {{ data.isModificar ? 'Guardar' : 'Crear' }}
+        </button>
+      }
+    </mat-dialog-actions>
+
+  </form>
+</mat-dialog-content>

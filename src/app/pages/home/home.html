@@ -1,5 +1,5 @@
 <mat-sidenav-container class="layout-container">
-    @if (authService.isLoggedIn()) {
+
     <mat-sidenav #sidenav mode="side" [(opened)]="opened" class="sidebar">
         <div class="logo-section">
             <div class="logo-circle">
@@ -20,20 +20,16 @@
             }
         </mat-nav-list>
     </mat-sidenav>
-    }
 
     <mat-sidenav-content class="content-area">
         <mat-toolbar class="topbar">
-            @if (authService.isLoggedIn()) {
             <button mat-icon-button (click)="toggleMenu()">
                 <mat-icon>menu</mat-icon>
             </button>
-            }
 
             <span class="title">Sistema Angular Material</span>
             <span class="spacer"></span>
 
-            @if (authService.isLoggedIn()) {
             <button mat-icon-button>
                 <mat-icon>notifications</mat-icon>
             </button>
@@ -45,7 +41,6 @@
             <button mat-icon-button (click)="logout()">
                 <mat-icon>logout</mat-icon>
             </button>
-            }
         </mat-toolbar>
 
         <div class="page-content">
@@ -55,6 +50,7 @@
             </div>
         </div>
     </mat-sidenav-content>
+
 </mat-sidenav-container>
 
 <app-footer></app-footer>

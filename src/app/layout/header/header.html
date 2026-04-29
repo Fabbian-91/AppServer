@@ -1,0 +1,23 @@
+<mat-toolbar color="primary" class="header">
+
+  <!-- Botón para abrir/cerrar menú lateral -->
+  <button mat-icon-button (click)="toggleMenu.emit()">
+    <mat-icon>menu</mat-icon>
+  </button>
+
+  <!-- Título de la aplicación -->
+  <span class="app-title">Mi App</span>
+
+  <span class="spacer"></span>
+
+  <!-- Botón de inicio -->
+  <button mat-button routerLink="/dashboard">
+    Dashboard
+  </button>
+
+  <!-- Botón de salir -->
+  <button mat-button (click)="logout.emit()">
+    Salir
+  </button>
+
+</mat-toolbar>

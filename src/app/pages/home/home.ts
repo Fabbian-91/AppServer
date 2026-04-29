@@ -20,12 +20,11 @@ export class Home {
   [x: string]: any;
   opened = true;
 
+  //Colorcar rutas de redirección
   menuItems = [
     { icon: 'home', label: 'Inicio', route: '/dashboard' },
-    { icon: 'home', label: 'Categoria', route: '/listaCategorias' },
-    { icon: 'dashboard', label: 'Dashboard', route: '/dashboard' },
-    { icon: 'shopping_cart', label: 'Pedidos', route: '/pedidos' },
-    { icon: 'settings', label: 'Configuración', route: '/configuracion' },
+    { icon: 'category', label: 'Categoria', route: '/listaCategorias' },
+    { icon: 'people', label: 'Usuarios', route: '/listaUsuarios' },
   ];
 
   toggleMenu(): void {
